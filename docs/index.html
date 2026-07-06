@@ -106,6 +106,7 @@
             margin-bottom: 25px;
         }
         
+        /* Subheadings for the split galleries */
         h3.gallery-subtitle {
             color: #1a1a1a;
             font-size: 1.4rem;
@@ -145,33 +146,19 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
-
-        /* 🖼️ NEW PICTURELESS ART PLACEHOLDER BOX */
-        .image-placeholder-box {
+        .art-card img {
             width: 100%;
-            height: 180px;
-            background-color: #f0ece1; /* Contrasting warm gray-cream */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            height: 220px;
+            object-fit: cover;
             border-bottom: 3px solid #4A0E17;
-            color: #7a7566;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
         }
-        .image-placeholder-box svg {
-            margin-bottom: 8px;
-            opacity: 0.6;
-        }
-
-        .art-info { padding: 20px; }
+        .art-info { padding: 15px; }
         .art-title { font-size: 1.2rem; margin: 0 0 5px 0; color: #1a1a1a; }
         .artist-name { font-size: 0.9rem; color: #777; font-style: italic; margin: 0 0 12px 0; }
         .historical-essay { font-size: 0.85rem; line-height: 1.5; color: #444; margin: 0; }
         .historical-essay strong { color: #4A0E17; }
 
+        /* Placeholder status styling for the submission gallery */
         .empty-gallery-message {
             text-align: center;
             padding: 40px 20px;
@@ -261,44 +248,38 @@
             <h2>The Digital Gallery</h2>
             
             <h3 class="gallery-subtitle">Student Examples</h3>
-            <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Use these standard formatting blueprints provided by our judge panel as guidance for structuring your title, composition, and historical context claims[cite: 68].</p>
+            <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Use these curated examples provided by our judges as inspiration for your own artwork and historical summaries.</p>
             
             <div class="gallery-grid">
                 
                 <div class="art-card">
-                    <div class="image-placeholder-box">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        [Student Artwork Canvas]
-                    </div>
+                    <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600" alt="Landscape Example">
                     <div class="art-info">
-                        <h3 class="art-title">(Artwork Title Here)</h3>
-                        <p class="artist-name">By: Example Panel</p>
+                        <h3 class="art-title">Tranquil Mountains</h3>
+                        <p class="artist-name">By: Judge Example Panel</p>
                         <p class="historical-essay">
-                            <strong>Historical Context:</strong> (Example Paragraph) This space will feature your 150-to-300-word essay explaining the specific cultural narratives, regional histories, structural elements, or historical symbols that inspired your piece[cite: 38]. Ensure your context claims reference validated eras or movements[cite: 56, 68].
+                            <strong>Historical Context:</strong> This piece is inspired by traditional East Asian ink wash painting techniques (Shan Shui), which originated in China during the Tang Dynasty and later spread to Korea and Japan. Variations of black ink density capture the "spirit" of nature. The massive scale of the mountains compared to tiny human elements symbolizes the philosophical harmony between mankind and the universe.
                         </p>
                     </div>
                 </div>
 
                 <div class="art-card">
-                    <div class="image-placeholder-box">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        [Student Artwork Canvas]
-                    </div>
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600" alt="Ocean Example">
                     <div class="art-info">
-                        <h3 class="art-title">(Artwork Title Here)</h3>
-                        <p class="artist-name">By: Example Panel</p>
+                        <h3 class="art-title">The Cresting Wave</h3>
+                        <p class="artist-name">By: Judge Example Panel</p>
                         <p class="historical-essay">
-                            <strong>Historical Context:</strong> (Example Paragraph) This space will feature your 150-to-300-word essay explaining the specific cultural narratives, regional histories, structural elements, or historical symbols that inspired your piece[cite: 38]. Ensure your context claims reference validated eras or movements[cite: 56, 68].
+                            <strong>Historical Context:</strong> This artwork references the famous Japanese Ukiyo-e genre (pictures of the floating world) from the Edo period. Traditional woodblock prints required intense collaboration between an artist, a carver, and a printer. Linear precision and vibrant Prussian blues heavily influenced Western Impressionist movements in the late 19th century.
                         </p>
                     </div>
                 </div>
 
-            </div>
+                </div>
 
             <h3 class="gallery-subtitle">Artwork Submissions Gallery</h3>
             
             <div class="empty-gallery-message">
-                <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins[cite: 58].</p>
+                <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins.</p>
             </div>
             
         </section>
