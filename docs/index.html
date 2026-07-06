@@ -190,8 +190,8 @@
             color: #1a1a1a;
         }
         .form-group input[type="text"],
-        .form-group textarea,
-        .form-group input[type="file"] {
+        .form-group input[type="url"],
+        .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -202,6 +202,7 @@
             transition: border-color 0.3s;
         }
         .form-group input[type="text"]:focus,
+        .form-group input[type="url"]:focus,
         .form-group textarea:focus {
             border-color: #4A0E17;
             outline: none;
@@ -291,7 +292,7 @@
         <section id="submit" class="form-box">
             <h2>Submit Your Artwork</h2>
             
-            <form id="artSubmissionForm" action="https://formspree.io/f/xlgyvnzq" method="POST" enctype="multipart/form-data">
+            <form id="artSubmissionForm" action="https://formspree.io/f/xlgyvnzq" method="POST">
                 
                 <div class="form-group">
                     <label id="artistNameLabel" for="artistName">Artist Full Name</label>
@@ -309,8 +310,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="artFile">Upload Your Image (PNG, JPG)</label>
-                    <input type="file" id="artFile" name="Artwork Image File" accept="image/*" required>
+                    <label for="artUrl">Link to Your Artwork Image</label>
+                    <input type="url" id="artUrl" name="Artwork Image Link" placeholder="Paste link from Google Drive, Imgur, Discord, etc." required>
                 </div>
 
                 <div class="form-group">
@@ -332,7 +333,7 @@
         anonymousToggle.addEventListener('change', function() {
             if (this.checked) {
                 artistNameInput.value = "Anonymous";
-                artistNameInput.disabled = true; 
+                artistNameInput.disabled = false; 
                 artistNameInput.readOnly = true;   
                 artistNameInput.style.backgroundColor = "#e9e9e9";
             } else {
