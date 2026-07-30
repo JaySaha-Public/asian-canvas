@@ -293,13 +293,38 @@
         </section>
 
         <section id="submit" class="form-box">
-            <h2>Submit Your Artwork</h2>
-            
-            <form id="artSubmissionForm" action="https://formsubmit.co/jay.saha.ny11@gmail.com" method="POST" enctype="multipart/form-data">
-                
-                <input type="hidden" name="_subject" value="New Asian Canvas Art Submission!">
-                <input type="hidden" name="_captcha" value="false">
+    <h2>Submit Your Artwork</h2>
+    
+    <form id="artSubmissionForm" action="https://formsubmit.co/jay.saha.ny11@gmail.com" method="POST" enctype="multipart/form-data">
+        
+        <input type="hidden" name="_subject" value="New Asian Canvas Art Submission!">
+        <input type="hidden" name="_captcha" value="false">
 
-                <div class="form-group">
-                    <label id="artistNameLabel" for="artistName">Artist Full Name</label>
-                    <input type="text" id="artistName" name="Artist Name" placeholder="Enter your full name" required>
+        <div class="form-group">
+            <label id="artistNameLabel" for="artistName">Artist Full Name</label>
+            <input type="text" id="artistName" name="Artist Name" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="anonymousToggle" name="Requested Anonymity" value="Yes">
+            <label for="anonymousToggle">Post Anonymously on the Public Website</label>
+        </div>
+
+        <div class="form-group">
+            <label for="artTitle">Artwork Title</label>
+            <input type="text" id="artTitle" name="Artwork Title" placeholder="e.g., Silk Road Whispers" required>
+        </div>
+
+        <div class="form-group">
+            <label for="artFile">Upload Your Image or GIF File (Max 10MB)</label>
+            <input type="file" id="artFile" name="attachment" accept="image/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="historyEssay">Historical Background Essay (150 - 300 words)</label>
+            <textarea id="historyEssay" name="Historical Essay" rows="6" placeholder="Explain the cultural symbolism, regional roots, or historical era that inspired your artwork..." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Entry</button>
+    </form>
+</section>
