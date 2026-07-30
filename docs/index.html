@@ -149,7 +149,7 @@
         .image-placeholder-box, .art-card img {
             width: 100%;
             height: auto;
-            max-height: 450px;
+            max-height: 500px;
             object-fit: cover;
             border-bottom: 3px solid #4A0E17;
             display: block;
@@ -175,8 +175,18 @@
         .art-info { padding: 20px; }
         .art-title { font-size: 1.2rem; margin: 0 0 5px 0; color: #1a1a1a; }
         .artist-name { font-size: 0.9rem; color: #777; font-style: italic; margin: 0 0 12px 0; }
-        .historical-essay { font-size: 0.85rem; line-height: 1.5; color: #444; margin: 0; }
+        .historical-essay { font-size: 0.85rem; line-height: 1.5; color: #444; margin: 0 0 12px 0; }
         .historical-essay strong { color: #4A0E17; }
+
+        .empty-gallery-message {
+            text-align: center;
+            padding: 40px 20px;
+            background: #fdfcf7;
+            border: 2px dashed #d4af37;
+            border-radius: 6px;
+            color: #666;
+            font-style: italic;
+        }
 
         /* 📝 SUBMISSION FORM STYLES */
         .form-group { margin-bottom: 20px; }
@@ -262,15 +272,21 @@
             <div class="gallery-grid">
                 
                 <div class="art-card">
-                    <div class="image-placeholder-box">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        [Student Artwork Canvas]
-                    </div>
+                    <img src="./image.png" alt="Unyielding Fabric by Jay Saha">
                     <div class="art-info">
-                        <h3 class="art-title">(Artwork Title Here)</h3>
-                        <p class="artist-name">By: Example Panel</p>
+                        <h3 class="art-title">Unyielding Fabric</h3>
+                        <p class="artist-name">By: Jay Saha</p>
                         <p class="historical-essay">
-                            <strong>Historical Context:</strong> (Example Paragraph) This space will feature your 150-to-300-word essay explaining the specific cultural narratives, regional histories, structural elements, or historical symbols that inspired your piece. Ensure your context claims reference validated eras or movements.
+                            <strong>Historical Context:</strong> Public spaces are supposed to belong to everyone, yet many immigrants move through them carrying a constant awareness that their appearance, culture, or religion shapes how others perceive them. This portrait explores the quiet resilience required to maintain identity in an environment where prejudice and xenophobia make everyday moments feel isolating. Deeply rooted cultural symbols represent dignity, heritage, and strength, yet these same elements are often met with unprovoked suspicion in modern public life.
+                        </p>
+                        <p class="historical-essay">
+                            Embodying this, the subject sits inside a New York City subway car. The subway is an intense shared space where people from countless backgrounds cross paths, making it an ideal setting to examine true belonging. Her steady gaze and upright posture project confidence rather than fear, while her hand resting over her chest marks a quiet moment of self-grounding against the emotional weight of being watched. The worn metal interior of the train contrasts with her composed presence, underscoring her resolve within an indifferent setting.
+                        </p>
+                        <p class="historical-essay">
+                            Traditional clothing and jewelry celebrate her cultural identity throughout the piece. The vibrant red sari, gold jewelry, bindi, and sindoor reflect traditions that have carried South Asian spiritual and cultural meaning for generations. These elements serve as powerful declarations of dignity and continuity. However, visible expressions of South Asian identity frequently become targets of bias in everyday environments. This tension highlights the stark disconnect between a rich, ancient history and the narrow stereotypes forced upon it today.
+                        </p>
+                        <p class="historical-essay">
+                            Ultimately, this portrait centers on preserving humanity when confronted with bias. While the surrounding atmosphere suggests emotional tension, the subject's unwavering expression reflects a deeper strength, pride, and resilience that prejudice cannot erase.
                         </p>
                     </div>
                 </div>
@@ -279,31 +295,8 @@
 
             <h3 class="gallery-subtitle">Artwork Submissions Gallery</h3>
             
-            <div class="gallery-grid">
-                
-                <div class="art-card">
-                    <img src="image.png" alt="Unyielding Fabric by Jay Saha">
-                    <div class="art-info">
-                        <h3 class="art-title">Unyielding Fabric</h3>
-                        <p class="artist-name">By: Jay Saha</p>
-                        <p class="historical-essay">
-                            <strong>Historical Context:</strong> Public spaces are supposed to belong to everyone, yet many immigrants move through them carrying a constant awareness that their appearance, culture, or religion shapes how others perceive them. This portrait explores the quiet resilience required to maintain identity in an environment where prejudice and xenophobia make everyday moments feel isolating. Deeply rooted cultural symbols represent dignity, heritage, and strength, yet these same elements are often met with unprovoked suspicion in modern public life.
-                        </p>
-                        <br>
-                        <p class="historical-essay">
-                            Embodying this, the subject sits inside a New York City subway car. The subway is an intense shared space where people from countless backgrounds cross paths, making it an ideal setting to examine true belonging. Her steady gaze and upright posture project confidence rather than fear, while her hand resting over her chest marks a quiet moment of self-grounding against the emotional weight of being watched. The worn metal interior of the train contrasts with her composed presence, underscoring her resolve within an indifferent setting.
-                        </p>
-                        <br>
-                        <p class="historical-essay">
-                            Traditional clothing and jewelry celebrate her cultural identity throughout the piece. The vibrant red sari, gold jewelry, bindi, and sindoor reflect traditions that have carried South Asian spiritual and cultural meaning for generations. These elements serve as powerful declarations of dignity and continuity. However, visible expressions of South Asian identity frequently become targets of bias in everyday environments. This tension highlights the stark disconnect between a rich, ancient history and the narrow stereotypes forced upon it today.
-                        </p>
-                        <br>
-                        <p class="historical-essay">
-                            Ultimately, this portrait centers on preserving humanity when confronted with bias. While the surrounding atmosphere suggests emotional tension, the subject's unwavering expression reflects a deeper strength, pride, and resilience that prejudice cannot erase.
-                        </p>
-                    </div>
-                </div>
-
+            <div class="empty-gallery-message">
+                <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins.</p>
             </div>
             
         </section>
