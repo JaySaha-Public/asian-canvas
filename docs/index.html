@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asian Canvas | Home</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         body {
             background-color: #f9f6f0;
@@ -177,6 +180,7 @@
             line-height: 1.65;
             color: #444;
             margin-bottom: 14px;
+            white-space: pre-wrap; /* Keeps paragraph spacing for user submissions */
         }
 
         .empty-gallery-message {
@@ -233,6 +237,10 @@
         .submit-btn:hover {
             background-color: #d4af37;
             color: #1a1a1a;
+        }
+        .submit-btn:disabled {
+            background-color: #888888;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -304,8 +312,10 @@
 
             <h3 class="gallery-subtitle">Artwork Submissions Gallery</h3>
             
-            <div class="empty-gallery-message">
-                <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins.</p>
+            <div id="dynamicGalleryContainer">
+                <div class="empty-gallery-message">
+                    <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins.</p>
+                </div>
             </div>
             
         </section>
@@ -313,50 +323,60 @@
         <section id="submit" class="form-box">
             <h2>Submit Your Artwork</h2>
             
-            <form id="artSubmissionForm" action="https://formsubmit.co/jay.saha.ny11@gmail.com" method="POST" enctype="multipart/form-data">
+            <form id="artSubmissionForm">
                 
-                <input type="hidden" name="_subject" value="New Asian Canvas Art Submission!">
-                <input type="hidden" name="_captcha" value="false">
-
                 <div class="form-group">
                     <label id="artistNameLabel" for="artistName">Artist Full Name</label>
-                    <input type="text" id="artistName" name="Artist Name" placeholder="Enter your full name" required>
+                    <input type="text" id="artistName" name="artistName" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="form-group checkbox-group">
-                    <input type="checkbox" id="anonymousToggle" name="Requested Anonymity" value="Yes">
+                    <input type="checkbox" id="anonymousToggle" name="anonymousToggle">
                     <label for="anonymousToggle">Post Anonymously on the Public Website</label>
                 </div>
 
                 <div class="form-group">
                     <label for="artTitle">Artwork Title</label>
-                    <input type="text" id="artTitle" name="Artwork Title" placeholder="e.g., Silk Road Whispers" required>
+                    <input type="text" id="artTitle" name="artTitle" placeholder="e.g., Silk Road Whispers" required>
                 </div>
 
                 <div class="form-group">
                     <label for="artFile">Upload Your Image or GIF File (Max 10MB)</label>
-                    <input type="file" id="artFile" name="attachment" accept="image/*" required>
+                    <input type="file" id="artFile" name="artFile" accept="image/*" required>
                 </div>
 
                 <div class="form-group">
                     <label for="historyEssay">Historical Background Essay (150 - 300 words)</label>
-                    <textarea id="historyEssay" name="Historical Essay" rows="6" placeholder="Explain the cultural symbolism, regional roots, or historical era that inspired your artwork..." required></textarea>
+                    <textarea id="historyEssay" name="historyEssay" rows="6" placeholder="Explain the cultural symbolism, regional roots, or historical era that inspired your artwork..." required></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn">Submit Entry</button>
+                <button type="submit" id="submitBtn" class="submit-btn">Submit Entry</button>
             </form>
         </section>
 
     </main>
 
     <script>
+        // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
+        const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
+        const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
+        const CLOUDINARY_PRESET = "asian_canvas_preset";
+
+        // Initialize Supabase Client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // UI DOM Elements
         const anonymousToggle = document.getElementById('anonymousToggle');
         const artistNameInput = document.getElementById('artistName');
+        const submissionForm = document.getElementById('artSubmissionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
 
+        // Anonymity Toggle Logic
         anonymousToggle.addEventListener('change', function() {
             if (this.checked) {
                 artistNameInput.value = "Anonymous";
-                artistNameInput.disabled = false; 
                 artistNameInput.readOnly = true;   
                 artistNameInput.style.backgroundColor = "#e9e9e9";
             } else {
@@ -365,6 +385,103 @@
                 artistNameInput.style.backgroundColor = "#fafafa";
             }
         });
+
+        // 📥 FETCH APPROVED SUBMISSIONS FROM SUPABASE
+        async function fetchApprovedGallery() {
+            try {
+                const { data: submissions, error } = await supabase
+                    .from('submissions')
+                    .select('*')
+                    .eq('approved', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (submissions && submissions.length > 0) {
+                    let galleryHTML = '<div class="gallery-grid">';
+                    submissions.forEach(art => {
+                        const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
+                        galleryHTML += `
+                            <div class="art-card">
+                                <img src="${art.image_url}" alt="${art.title} by ${displayName}">
+                                <div class="art-info">
+                                    <h3 class="art-title">${art.title}</h3>
+                                    <p class="artist-name">By: ${displayName}</p>
+                                    <div class="essay-container">
+                                        <div class="essay-heading">Historical Context & Reflection</div>
+                                        <p class="historical-essay">${art.essay}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    galleryHTML += '</div>';
+                    dynamicGalleryContainer.innerHTML = galleryHTML;
+                }
+            } catch (err) {
+                console.error("Error loading gallery items:", err);
+            }
+        }
+
+        // 📤 SUBMIT ENTRY (UPLOAD TO CLOUDINARY + SAVE TO SUPABASE)
+        submissionForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('artFile');
+            const file = fileInput.files[0];
+            if (!file) return alert("Please select an image file to upload.");
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Uploading Image...";
+
+            try {
+                // 1. Upload Image to Cloudinary
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_PRESET);
+
+                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const cloudData = await cloudRes.json();
+                if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
+
+                const imageUrl = cloudData.secure_url;
+
+                // 2. Insert Metadata into Supabase Database
+                submitBtn.textContent = "Saving Submission...";
+
+                const { error: dbError } = await supabase
+                    .from('submissions')
+                    .insert([{
+                        artist_name: artistNameInput.value,
+                        is_anonymous: anonymousToggle.checked,
+                        title: document.getElementById('artTitle').value,
+                        image_url: imageUrl,
+                        essay: document.getElementById('historyEssay').value,
+                        approved: false // Requires admin moderation toggle in Supabase
+                    }]);
+
+                if (dbError) throw dbError;
+
+                alert("🎉 Submission successful! Your artwork has been sent for review.");
+                submissionForm.reset();
+                artistNameInput.readOnly = false;
+                artistNameInput.style.backgroundColor = "#fafafa";
+
+            } catch (err) {
+                console.error("Submission Error:", err);
+                alert("An error occurred during submission: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Entry";
+            }
+        });
+
+        // Initialize gallery load on startup
+        fetchApprovedGallery();
     </script>
 
 </body>
