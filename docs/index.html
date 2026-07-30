@@ -148,12 +148,15 @@
 
         .image-placeholder-box, .art-card img {
             width: 100%;
-            height: 220px;
+            height: auto;
+            max-height: 450px;
             object-fit: cover;
             border-bottom: 3px solid #4A0E17;
+            display: block;
         }
 
         .image-placeholder-box {
+            height: 220px;
             background-color: #f0ece1;
             display: flex;
             flex-direction: column;
@@ -174,16 +177,6 @@
         .artist-name { font-size: 0.9rem; color: #777; font-style: italic; margin: 0 0 12px 0; }
         .historical-essay { font-size: 0.85rem; line-height: 1.5; color: #444; margin: 0; }
         .historical-essay strong { color: #4A0E17; }
-
-        .empty-gallery-message {
-            text-align: center;
-            padding: 40px 20px;
-            background: #fdfcf7;
-            border: 2px dashed #d4af37;
-            border-radius: 6px;
-            color: #666;
-            font-style: italic;
-        }
 
         /* 📝 SUBMISSION FORM STYLES */
         .form-group { margin-bottom: 20px; }
@@ -286,45 +279,92 @@
 
             <h3 class="gallery-subtitle">Artwork Submissions Gallery</h3>
             
-            <div class="empty-gallery-message">
-                <p>The school-wide competition launches December 1st! Approved student submissions, titles, and historical narratives will appear here in our community gallery once the competition begins.</p>
+            <div class="gallery-grid">
+                
+                <div class="art-card">
+                    <img src="image.png" alt="Unyielding Fabric by Jay Saha">
+                    <div class="art-info">
+                        <h3 class="art-title">Unyielding Fabric</h3>
+                        <p class="artist-name">By: Jay Saha</p>
+                        <p class="historical-essay">
+                            <strong>Historical Context:</strong> Public spaces are supposed to belong to everyone, yet many immigrants move through them carrying a constant awareness that their appearance, culture, or religion shapes how others perceive them. This portrait explores the quiet resilience required to maintain identity in an environment where prejudice and xenophobia make everyday moments feel isolating. Deeply rooted cultural symbols represent dignity, heritage, and strength, yet these same elements are often met with unprovoked suspicion in modern public life.
+                        </p>
+                        <br>
+                        <p class="historical-essay">
+                            Embodying this, the subject sits inside a New York City subway car. The subway is an intense shared space where people from countless backgrounds cross paths, making it an ideal setting to examine true belonging. Her steady gaze and upright posture project confidence rather than fear, while her hand resting over her chest marks a quiet moment of self-grounding against the emotional weight of being watched. The worn metal interior of the train contrasts with her composed presence, underscoring her resolve within an indifferent setting.
+                        </p>
+                        <br>
+                        <p class="historical-essay">
+                            Traditional clothing and jewelry celebrate her cultural identity throughout the piece. The vibrant red sari, gold jewelry, bindi, and sindoor reflect traditions that have carried South Asian spiritual and cultural meaning for generations. These elements serve as powerful declarations of dignity and continuity. However, visible expressions of South Asian identity frequently become targets of bias in everyday environments. This tension highlights the stark disconnect between a rich, ancient history and the narrow stereotypes forced upon it today.
+                        </p>
+                        <br>
+                        <p class="historical-essay">
+                            Ultimately, this portrait centers on preserving humanity when confronted with bias. While the surrounding atmosphere suggests emotional tension, the subject's unwavering expression reflects a deeper strength, pride, and resilience that prejudice cannot erase.
+                        </p>
+                    </div>
+                </div>
+
             </div>
             
         </section>
 
         <section id="submit" class="form-box">
-    <h2>Submit Your Artwork</h2>
-    
-    <form id="artSubmissionForm" action="https://formsubmit.co/jay.saha.ny11@gmail.com" method="POST" enctype="multipart/form-data">
-        
-        <input type="hidden" name="_subject" value="New Asian Canvas Art Submission!">
-        <input type="hidden" name="_captcha" value="false">
+            <h2>Submit Your Artwork</h2>
+            
+            <form id="artSubmissionForm" action="https://formsubmit.co/jay.saha.ny11@gmail.com" method="POST" enctype="multipart/form-data">
+                
+                <input type="hidden" name="_subject" value="New Asian Canvas Art Submission!">
+                <input type="hidden" name="_captcha" value="false">
 
-        <div class="form-group">
-            <label id="artistNameLabel" for="artistName">Artist Full Name</label>
-            <input type="text" id="artistName" name="Artist Name" placeholder="Enter your full name" required>
-        </div>
+                <div class="form-group">
+                    <label id="artistNameLabel" for="artistName">Artist Full Name</label>
+                    <input type="text" id="artistName" name="Artist Name" placeholder="Enter your full name" required>
+                </div>
 
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="anonymousToggle" name="Requested Anonymity" value="Yes">
-            <label for="anonymousToggle">Post Anonymously on the Public Website</label>
-        </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="anonymousToggle" name="Requested Anonymity" value="Yes">
+                    <label for="anonymousToggle">Post Anonymously on the Public Website</label>
+                </div>
 
-        <div class="form-group">
-            <label for="artTitle">Artwork Title</label>
-            <input type="text" id="artTitle" name="Artwork Title" placeholder="e.g., Silk Road Whispers" required>
-        </div>
+                <div class="form-group">
+                    <label for="artTitle">Artwork Title</label>
+                    <input type="text" id="artTitle" name="Artwork Title" placeholder="e.g., Silk Road Whispers" required>
+                </div>
 
-        <div class="form-group">
-            <label for="artFile">Upload Your Image or GIF File (Max 10MB)</label>
-            <input type="file" id="artFile" name="attachment" accept="image/*" required>
-        </div>
+                <div class="form-group">
+                    <label for="artFile">Upload Your Image or GIF File (Max 10MB)</label>
+                    <input type="file" id="artFile" name="attachment" accept="image/*" required>
+                </div>
 
-        <div class="form-group">
-            <label for="historyEssay">Historical Background Essay (150 - 300 words)</label>
-            <textarea id="historyEssay" name="Historical Essay" rows="6" placeholder="Explain the cultural symbolism, regional roots, or historical era that inspired your artwork..." required></textarea>
-        </div>
+                <div class="form-group">
+                    <label for="historyEssay">Historical Background Essay (150 - 300 words)</label>
+                    <textarea id="historyEssay" name="Historical Essay" rows="6" placeholder="Explain the cultural symbolism, regional roots, or historical era that inspired your artwork..." required></textarea>
+                </div>
 
-        <button type="submit" class="submit-btn">Submit Entry</button>
-    </form>
-</section>
+                <button type="submit" class="submit-btn">Submit Entry</button>
+            </form>
+        </section>
+
+    </main>
+
+    <script>
+        const anonymousToggle = document.getElementById('anonymousToggle');
+        const artistNameInput = document.getElementById('artistName');
+
+        // Handles the anonymity toggle UI locking behavior
+        anonymousToggle.addEventListener('change', function() {
+            if (this.checked) {
+                artistNameInput.value = "Anonymous";
+                artistNameInput.disabled = false; 
+                artistNameInput.readOnly = true;   
+                artistNameInput.style.backgroundColor = "#e9e9e9";
+            } else {
+                artistNameInput.value = "";
+                artistNameInput.readOnly = false;
+                artistNameInput.style.backgroundColor = "#fafafa";
+            }
+        });
+    </script>
+
+</body>
+</html>
