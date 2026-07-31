@@ -385,15 +385,14 @@
                 const studentExamples = submissions.filter(item => item.type === 'example');
                 const regularSubmissions = submissions.filter(item => item.type !== 'example');
 
-                // Render Student Examples if any exist in DB
+                // Render Additional Student Examples (APPENDS to the existing Jay Saha card)
                 const exampleGrid = document.querySelector('.gallery-grid');
                 if (studentExamples.length > 0 && exampleGrid) {
-                    let exampleHTML = '';
                     studentExamples.forEach(art => {
                         const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
-                        exampleHTML += createArtCardHTML(art, displayName);
+                        // Appends new cards to the existing grid content
+                        exampleGrid.innerHTML += createArtCardHTML(art, displayName);
                     });
-                    exampleGrid.innerHTML = exampleHTML;
                 }
 
                 // Render Competition Submissions
