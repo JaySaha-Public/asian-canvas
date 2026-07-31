@@ -266,7 +266,7 @@
     <main class="container">
         
         <section class="welcome-box">
-            <h2>Welcome to the Digital Gallery</h2>
+            2<h2>Welcome to the Digital Gallery</h2>
             <p>This platform is dedicated to blending UI/UX design with traditional Asian art history. Explore student masterpieces and historical context submissions below!</p>
         </section>
 
@@ -277,7 +277,6 @@
             <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Use this standard formatting blueprint provided by our judge panel as guidance for structuring your title, composition, and historical context claims.</p>
             
             <div class="gallery-grid">
-                
                 <div class="art-card">
                     <img src="./image.png" alt="Unyielding Fabric by Jay Saha">
                     <div class="art-info">
@@ -286,14 +285,12 @@
                         
                         <div class="essay-container">
                             <div class="essay-heading">Historical Context & Reflection</div>
-                            
                             <p class="historical-essay">
                                 Public spaces are supposed to belong to everyone, yet many immigrants move through them carrying a constant awareness that their appearance, culture, or religion shapes how others perceive them...
                             </p>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <h3 class="gallery-subtitle">Artwork Submissions Gallery</h3>
@@ -310,7 +307,6 @@
             <h2>Submit Your Artwork</h2>
             
             <form id="artSubmissionForm">
-                
                 <div class="form-group">
                     <label id="artistNameLabel" for="artistName">Artist Full Name</label>
                     <input type="text" id="artistName" name="artistName" placeholder="Enter your full name" required>
@@ -349,8 +345,8 @@
         const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
         const CLOUDINARY_PRESET = "asian_canvas_preset";
 
-        // Initialize Supabase Client (Single Declaration)
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Client safely (prevents duplicate error)
+        var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // UI DOM Elements
         const anonymousToggle = document.getElementById('anonymousToggle');
@@ -359,7 +355,7 @@
         const submitBtn = document.getElementById('submitBtn');
         const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
 
-        // Anonymity Toggle Logic
+        // FIXED Anonymous Toggle Logic
         anonymousToggle.addEventListener('change', function() {
             if (this.checked) {
                 artistNameInput.value = "Anonymous";
@@ -372,10 +368,10 @@
             }
         });
 
-        // 📥 FETCH APPROVED SUBMISSIONS FROM SUPABASE
+        // 📥 FETCH APPROVED SUBMISSIONS
         async function fetchApprovedGallery() {
             try {
-                const { data: submissions, error } = await supabase
+                const { data: submissions, error } = await supabaseClient
                     .from('submissions')
                     .select('*')
                     .eq('approved', true)
@@ -411,7 +407,7 @@
 
         // 📤 SUBMIT ENTRY
         submissionForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Stop native page reload
+            e.preventDefault();
 
             const fileInput = document.getElementById('artFile');
             const file = fileInput.files[0];
@@ -428,47 +424,3 @@
 
                 const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'POST',
-                    body: formData
-                });
-
-                const cloudData = await cloudRes.json();
-                if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
-
-                const imageUrl = cloudData.secure_url;
-
-                // 2. Insert Metadata into Supabase Database
-                submitBtn.textContent = "Saving Submission...";
-
-                const { data, error: dbError } = await supabase
-                    .from('submissions')
-                    .insert([{
-                        artist_name: artistNameInput.value,
-                        is_anonymous: anonymousToggle.checked,
-                        title: document.getElementById('artTitle').value,
-                        image_url: imageUrl,
-                        essay: document.getElementById('historyEssay').value,
-                        approved: false
-                    }]);
-
-                if (dbError) throw dbError;
-
-                alert("🎉 Submission successful! Your artwork has been sent for review.");
-                submissionForm.reset();
-                artistNameInput.readOnly = false;
-                artistNameInput.style.backgroundColor = "#fafafa";
-
-            } catch (err) {
-                console.error("❌ Submission Error:", err);
-                alert("An error occurred during submission: " + err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Submit Entry";
-            }
-        });
-
-        // Initialize gallery load on startup
-        fetchApprovedGallery();
-    </script>
-
-</body>
-</html>
