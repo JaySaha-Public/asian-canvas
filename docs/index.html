@@ -36,23 +36,24 @@
             font-size: 1rem;
         }
 
-        /* 🧇 THE WAFFLE MENU BUTTON */
+        /* 🧇 FIXED WAFFLE MENU BUTTON */
         #menu-toggle { display: none; }
         .waffle-button {
-            position: absolute;
+            position: fixed; /* Fixed so it follows user on scroll */
             top: 25px;
             left: 25px;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1001; /* Keeps it above side menu */
             display: grid;
             grid-template-columns: repeat(3, 6px);
             gap: 4px;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(74, 14, 23, 0.85); /* Slightly darker so it's visible on light background while scrolling */
             border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             transition: background 0.3s;
         }
-        .waffle-button:hover { background: rgba(255, 255, 255, 0.25); }
+        .waffle-button:hover { background: rgba(74, 14, 23, 1); }
         .waffle-dot { width: 6px; height: 6px; background-color: white; border-radius: 1px; }
 
         /* 🚪 THE SIDE NAVIGATION MENU */
@@ -257,7 +258,7 @@
         <p>Celebrating Asian Cultural Heritage Through Art</p>
     </header>
 
-    <nav>
+    <nav id="nav-menu">
         <a href="index.html">Home</a>
         <a href="#gallery">Digital Gallery</a>
         <a href="#submit">Submit Art</a>
@@ -344,154 +345,159 @@ Ultimately, this portrait centers on preserving humanity when confronted with bi
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
-    const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
-    const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
-    const CLOUDINARY_PRESET = "asian_canvas_preset";
+            // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
+            const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
+            const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
+            const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
+            const CLOUDINARY_PRESET = "asian_canvas_preset";
 
-    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const anonymousToggle = document.getElementById('anonymousToggle');
-    const artistNameInput = document.getElementById('artistName');
-    const submissionForm = document.getElementById('artSubmissionForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
+            const menuCheckbox = document.getElementById('menu-toggle');
+            const navLinks = document.querySelectorAll('nav a');
+            const anonymousToggle = document.getElementById('anonymousToggle');
+            const artistNameInput = document.getElementById('artistName');
+            const submissionForm = document.getElementById('artSubmissionForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
 
-    // 1. Anonymous Toggle
-    if (anonymousToggle && artistNameInput) {
-        anonymousToggle.addEventListener('change', function() {
-            if (this.checked) {
-                artistNameInput.value = "Anonymous";
-                artistNameInput.readOnly = true;   
-                artistNameInput.style.backgroundColor = "#e9e9e9";
-            } else {
-                artistNameInput.value = "";
-                artistNameInput.readOnly = false;
-                artistNameInput.style.backgroundColor = "#fafafa";
-            }
-        });
-    }
-
-    // 📥 2. FETCH & SEPARATE GALLERY ITEMS (EXAMPLES vs COMPETITION ENTRIES)
-    async function fetchApprovedGallery() {
-        try {
-            const { data: submissions, error } = await supabaseClient
-                .from('submissions')
-                .select('*')
-                .eq('approved', true)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            if (submissions && submissions.length > 0) {
-                // Separate examples from general submissions
-                const studentExamples = submissions.filter(item => item.type === 'example');
-                const regularSubmissions = submissions.filter(item => item.type !== 'example');
-
-                // Render Additional Student Examples (APPENDS to the existing Jay Saha card)
-                const exampleGrid = document.querySelector('.gallery-grid');
-                if (studentExamples.length > 0 && exampleGrid) {
-                    studentExamples.forEach(art => {
-                        const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
-                        // Appends new cards to the existing grid content
-                        exampleGrid.innerHTML += createArtCardHTML(art, displayName);
-                    });
-                }
-
-                // Render Competition Submissions
-                if (regularSubmissions.length > 0 && dynamicGalleryContainer) {
-                    let galleryHTML = '<div class="gallery-grid">';
-                    regularSubmissions.forEach(art => {
-                        const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
-                        galleryHTML += createArtCardHTML(art, displayName);
-                    });
-                    galleryHTML += '</div>';
-                    dynamicGalleryContainer.innerHTML = galleryHTML;
-                }
-            }
-        } catch (err) {
-            console.error("Error loading gallery items:", err);
-        }
-    }
-
-    // Helper function to build art card HTML
-    function createArtCardHTML(art, displayName) {
-        return `
-            <div class="art-card">
-                <img src="${art.image_url}" alt="${art.title} by ${displayName}">
-                <div class="art-info">
-                    <h3 class="art-title">${art.title}</h3>
-                    <p class="artist-name">By: ${displayName}</p>
-                    <div class="essay-container">
-                        <div class="essay-heading">Historical Context & Reflection</div>
-                        <p class="historical-essay">${art.essay}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    // 📤 3. SUBMIT FORM
-    if (submissionForm) {
-        submissionForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const fileInput = document.getElementById('artFile');
-            const file = fileInput ? fileInput.files[0] : null;
-            if (!file) return alert("Please select an image file to upload.");
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Uploading Image...";
-
-            try {
-                // Cloudinary Upload
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', CLOUDINARY_PRESET);
-
-                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                    method: 'POST',
-                    body: formData
+            // 📱 AUTO-CLOSE NAV MENU WHEN A LINK IS CLICKED
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (menuCheckbox) menuCheckbox.checked = false;
                 });
+            });
 
-                const cloudData = await cloudRes.json();
-                if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
-
-                // Supabase Insert (defaults to type: 'submission')
-                submitBtn.textContent = "Saving Submission...";
-
-                const { data, error: dbError } = await supabaseClient
-                    .from('submissions')
-                    .insert([{
-                        artist_name: artistNameInput.value,
-                        is_anonymous: anonymousToggle.checked,
-                        title: document.getElementById('artTitle').value,
-                        image_url: cloudData.secure_url,
-                        essay: document.getElementById('historyEssay').value,
-                        approved: false,
-                        type: 'submission'
-                    }]);
-
-                if (dbError) throw dbError;
-
-                alert("🎉 Submission successful! Your artwork has been sent for review.");
-                submissionForm.reset();
-                artistNameInput.readOnly = false;
-                artistNameInput.style.backgroundColor = "#fafafa";
-
-            } catch (err) {
-                console.error("❌ Submission Error:", err);
-                alert("An error occurred during submission: " + err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Submit Entry";
+            // 1. Anonymous Toggle
+            if (anonymousToggle && artistNameInput) {
+                anonymousToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        artistNameInput.value = "Anonymous";
+                        artistNameInput.readOnly = true;   
+                        artistNameInput.style.backgroundColor = "#e9e9e9";
+                    } else {
+                        artistNameInput.value = "";
+                        artistNameInput.readOnly = false;
+                        artistNameInput.style.backgroundColor = "#fafafa";
+                    }
+                });
             }
-        });
-    }
 
-    fetchApprovedGallery();
-});
+            // 📥 2. FETCH & SEPARATE GALLERY ITEMS (EXAMPLES vs COMPETITION ENTRIES)
+            async function fetchApprovedGallery() {
+                try {
+                    const { data: submissions, error } = await supabaseClient
+                        .from('submissions')
+                        .select('*')
+                        .eq('approved', true)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    if (submissions && submissions.length > 0) {
+                        const studentExamples = submissions.filter(item => item.type === 'example');
+                        const regularSubmissions = submissions.filter(item => item.type !== 'example');
+
+                        // Render Additional Student Examples (APPENDS to the existing Jay Saha card)
+                        const exampleGrid = document.querySelector('.gallery-grid');
+                        if (studentExamples.length > 0 && exampleGrid) {
+                            studentExamples.forEach(art => {
+                                const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
+                                exampleGrid.innerHTML += createArtCardHTML(art, displayName);
+                            });
+                        }
+
+                        // Render Competition Submissions
+                        if (regularSubmissions.length > 0 && dynamicGalleryContainer) {
+                            let galleryHTML = '<div class="gallery-grid">';
+                            regularSubmissions.forEach(art => {
+                                const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
+                                galleryHTML += createArtCardHTML(art, displayName);
+                            });
+                            galleryHTML += '</div>';
+                            dynamicGalleryContainer.innerHTML = galleryHTML;
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error loading gallery items:", err);
+                }
+            }
+
+            // Helper function to build art card HTML
+            function createArtCardHTML(art, displayName) {
+                return `
+                    <div class="art-card">
+                        <img src="${art.image_url}" alt="${art.title} by ${displayName}">
+                        <div class="art-info">
+                            <h3 class="art-title">${art.title}</h3>
+                            <p class="artist-name">By: ${displayName}</p>
+                            <div class="essay-container">
+                                <div class="essay-heading">Historical Context & Reflection</div>
+                                <p class="historical-essay">${art.essay}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 📤 3. SUBMIT FORM
+            if (submissionForm) {
+                submissionForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const fileInput = document.getElementById('artFile');
+                    const file = fileInput ? fileInput.files[0] : null;
+                    if (!file) return alert("Please select an image file to upload.");
+
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Uploading Image...";
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', CLOUDINARY_PRESET);
+
+                        const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const cloudData = await cloudRes.json();
+                        if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
+
+                        submitBtn.textContent = "Saving Submission...";
+
+                        const { data, error: dbError } = await supabaseClient
+                            .from('submissions')
+                            .insert([{
+                                artist_name: artistNameInput.value,
+                                is_anonymous: anonymousToggle.checked,
+                                title: document.getElementById('artTitle').value,
+                                image_url: cloudData.secure_url,
+                                essay: document.getElementById('historyEssay').value,
+                                approved: false,
+                                type: 'submission'
+                            }]);
+
+                        if (dbError) throw dbError;
+
+                        alert("🎉 Submission successful! Your artwork has been sent for review.");
+                        submissionForm.reset();
+                        artistNameInput.readOnly = false;
+                        artistNameInput.style.backgroundColor = "#fafafa";
+
+                    } catch (err) {
+                        console.error("❌ Submission Error:", err);
+                        alert("An error occurred during submission: " + err.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Submit Entry";
+                    }
+                });
+            }
+
+            fetchApprovedGallery();
+        });
     </script>
 
 </body>
