@@ -340,136 +340,155 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
-            const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
-            const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
-            const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
-            const CLOUDINARY_PRESET = "asian_canvas_preset";
+    // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
+    const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
+    const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
+    const CLOUDINARY_PRESET = "asian_canvas_preset";
 
-            // Initialize Client safely
-            var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // UI DOM Elements
-            const anonymousToggle = document.getElementById('anonymousToggle');
-            const artistNameInput = document.getElementById('artistName');
-            const submissionForm = document.getElementById('artSubmissionForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
+    const anonymousToggle = document.getElementById('anonymousToggle');
+    const artistNameInput = document.getElementById('artistName');
+    const submissionForm = document.getElementById('artSubmissionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const dynamicGalleryContainer = document.getElementById('dynamicGalleryContainer');
 
-            // Anonymous Toggle Event Listener
-            if (anonymousToggle && artistNameInput) {
-                anonymousToggle.addEventListener('change', function() {
-                    if (this.checked) {
-                        artistNameInput.value = "Anonymous";
-                        artistNameInput.readOnly = true;   
-                        artistNameInput.style.backgroundColor = "#e9e9e9";
-                    } else {
-                        artistNameInput.value = "";
-                        artistNameInput.readOnly = false;
-                        artistNameInput.style.backgroundColor = "#fafafa";
-                    }
-                });
+    // 1. Anonymous Toggle
+    if (anonymousToggle && artistNameInput) {
+        anonymousToggle.addEventListener('change', function() {
+            if (this.checked) {
+                artistNameInput.value = "Anonymous";
+                artistNameInput.readOnly = true;   
+                artistNameInput.style.backgroundColor = "#e9e9e9";
+            } else {
+                artistNameInput.value = "";
+                artistNameInput.readOnly = false;
+                artistNameInput.style.backgroundColor = "#fafafa";
             }
+        });
+    }
 
-            // 📥 FETCH APPROVED SUBMISSIONS
-            async function fetchApprovedGallery() {
-                try {
-                    const { data: submissions, error } = await supabaseClient
-                        .from('submissions')
-                        .select('*')
-                        .eq('approved', true)
-                        .order('created_at', { ascending: false });
+    // 📥 2. FETCH & SEPARATE GALLERY ITEMS (EXAMPLES vs COMPETITION ENTRIES)
+    async function fetchApprovedGallery() {
+        try {
+            const { data: submissions, error } = await supabaseClient
+                .from('submissions')
+                .select('*')
+                .eq('approved', true)
+                .order('created_at', { ascending: false });
 
-                    if (error) throw error;
+            if (error) throw error;
 
-                    if (submissions && submissions.length > 0) {
-                        let galleryHTML = '<div class="gallery-grid">';
-                        submissions.forEach(art => {
-                            const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
-                            galleryHTML += `
-                                <div class="art-card">
-                                    <img src="${art.image_url}" alt="${art.title} by ${displayName}">
-                                    <div class="art-info">
-                                        <h3 class="art-title">${art.title}</h3>
-                                        <p class="artist-name">By: ${displayName}</p>
-                                        <div class="essay-container">
-                                            <div class="essay-heading">Historical Context & Reflection</div>
-                                            <p class="historical-essay">${art.essay}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        galleryHTML += '</div>';
-                        dynamicGalleryContainer.innerHTML = galleryHTML;
-                    }
-                } catch (err) {
-                    console.error("Error loading gallery items:", err);
+            if (submissions && submissions.length > 0) {
+                // Separate examples from general submissions
+                const studentExamples = submissions.filter(item => item.type === 'example');
+                const regularSubmissions = submissions.filter(item => item.type !== 'example');
+
+                // Render Student Examples if any exist in DB
+                const exampleGrid = document.querySelector('.gallery-grid');
+                if (studentExamples.length > 0 && exampleGrid) {
+                    let exampleHTML = '';
+                    studentExamples.forEach(art => {
+                        const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
+                        exampleHTML += createArtCardHTML(art, displayName);
+                    });
+                    exampleGrid.innerHTML = exampleHTML;
+                }
+
+                // Render Competition Submissions
+                if (regularSubmissions.length > 0 && dynamicGalleryContainer) {
+                    let galleryHTML = '<div class="gallery-grid">';
+                    regularSubmissions.forEach(art => {
+                        const displayName = art.is_anonymous ? 'Anonymous' : art.artist_name;
+                        galleryHTML += createArtCardHTML(art, displayName);
+                    });
+                    galleryHTML += '</div>';
+                    dynamicGalleryContainer.innerHTML = galleryHTML;
                 }
             }
+        } catch (err) {
+            console.error("Error loading gallery items:", err);
+        }
+    }
 
-            // 📤 SUBMIT ENTRY
-            if (submissionForm) {
-                submissionForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
+    // Helper function to build art card HTML
+    function createArtCardHTML(art, displayName) {
+        return `
+            <div class="art-card">
+                <img src="${art.image_url}" alt="${art.title} by ${displayName}">
+                <div class="art-info">
+                    <h3 class="art-title">${art.title}</h3>
+                    <p class="artist-name">By: ${displayName}</p>
+                    <div class="essay-container">
+                        <div class="essay-heading">Historical Context & Reflection</div>
+                        <p class="historical-essay">${art.essay}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
-                    const fileInput = document.getElementById('artFile');
-                    const file = fileInput ? fileInput.files[0] : null;
-                    if (!file) return alert("Please select an image file to upload.");
+    // 📤 3. SUBMIT FORM
+    if (submissionForm) {
+        submissionForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = "Uploading Image...";
+            const fileInput = document.getElementById('artFile');
+            const file = fileInput ? fileInput.files[0] : null;
+            if (!file) return alert("Please select an image file to upload.");
 
-                    try {
-                        // 1. Upload Image to Cloudinary
-                        const formData = new FormData();
-                        formData.append('file', file);
-                        formData.append('upload_preset', CLOUDINARY_PRESET);
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Uploading Image...";
 
-                        const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                            method: 'POST',
-                            body: formData
-                        });
+            try {
+                // Cloudinary Upload
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_PRESET);
 
-                        const cloudData = await cloudRes.json();
-                        if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
-
-                        const imageUrl = cloudData.secure_url;
-
-                        // 2. Insert into Supabase Database
-                        submitBtn.textContent = "Saving Submission...";
-
-                        const { data, error: dbError } = await supabaseClient
-                            .from('submissions')
-                            .insert([{
-                                artist_name: artistNameInput.value,
-                                is_anonymous: anonymousToggle.checked,
-                                title: document.getElementById('artTitle').value,
-                                image_url: imageUrl,
-                                essay: document.getElementById('historyEssay').value,
-                                approved: false
-                            }]);
-
-                        if (dbError) throw dbError;
-
-                        alert("🎉 Submission successful! Your artwork has been sent for review.");
-                        submissionForm.reset();
-                        artistNameInput.readOnly = false;
-                        artistNameInput.style.backgroundColor = "#fafafa";
-
-                    } catch (err) {
-                        console.error("❌ Submission Error:", err);
-                        alert("An error occurred during submission: " + err.message);
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = "Submit Entry";
-                    }
+                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
                 });
-            }
 
-            // Initialize gallery load on startup
-            fetchApprovedGallery();
+                const cloudData = await cloudRes.json();
+                if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
+
+                // Supabase Insert (defaults to type: 'submission')
+                submitBtn.textContent = "Saving Submission...";
+
+                const { data, error: dbError } = await supabaseClient
+                    .from('submissions')
+                    .insert([{
+                        artist_name: artistNameInput.value,
+                        is_anonymous: anonymousToggle.checked,
+                        title: document.getElementById('artTitle').value,
+                        image_url: cloudData.secure_url,
+                        essay: document.getElementById('historyEssay').value,
+                        approved: false,
+                        type: 'submission'
+                    }]);
+
+                if (dbError) throw dbError;
+
+                alert("🎉 Submission successful! Your artwork has been sent for review.");
+                submissionForm.reset();
+                artistNameInput.readOnly = false;
+                artistNameInput.style.backgroundColor = "#fafafa";
+
+            } catch (err) {
+                console.error("❌ Submission Error:", err);
+                alert("An error occurred during submission: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Entry";
+            }
         });
+    }
+
+    fetchApprovedGallery();
+});
     </script>
 
 </body>
