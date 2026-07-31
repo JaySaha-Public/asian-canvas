@@ -356,14 +356,14 @@
 
     </main>
 
-    <script>
+   <script>
         // 🔑 SUPABASE & CLOUDINARY CONFIGURATION
         const SUPABASE_URL = "https://qvxbjwhmxgaqcqfzziua.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_cvdB07lhKIRRiCiignDL7g_X-rlCBnd";
         const CLOUDINARY_CLOUD_NAME = "jhoqstjm";
         const CLOUDINARY_PRESET = "asian_canvas_preset";
 
-        // Initialize Supabase Client
+        // Initialize Supabase Client (Only ONCE!)
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // UI DOM Elements
@@ -425,7 +425,9 @@
 
         // 📤 SUBMIT ENTRY (UPLOAD TO CLOUDINARY + SAVE TO SUPABASE)
         submissionForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Prevents page reload!
+
+            console.log("1. Form submit intercepted!");
 
             const fileInput = document.getElementById('artFile');
             const file = fileInput.files[0];
@@ -436,6 +438,7 @@
 
             try {
                 // 1. Upload Image to Cloudinary
+                console.log("2. Uploading to Cloudinary...");
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', CLOUDINARY_PRESET);
@@ -449,11 +452,13 @@
                 if (!cloudRes.ok) throw new Error(cloudData.error?.message || "Cloudinary upload failed");
 
                 const imageUrl = cloudData.secure_url;
+                console.log("3. Cloudinary success! URL:", imageUrl);
 
                 // 2. Insert Metadata into Supabase Database
                 submitBtn.textContent = "Saving Submission...";
+                console.log("4. Saving to Supabase...");
 
-                const { error: dbError } = await supabase
+                const { data, error: dbError } = await supabase
                     .from('submissions')
                     .insert([{
                         artist_name: artistNameInput.value,
@@ -461,18 +466,19 @@
                         title: document.getElementById('artTitle').value,
                         image_url: imageUrl,
                         essay: document.getElementById('historyEssay').value,
-                        approved: false // Requires admin moderation toggle in Supabase
+                        approved: false
                     }]);
 
                 if (dbError) throw dbError;
 
+                console.log("5. Supabase save complete!");
                 alert("🎉 Submission successful! Your artwork has been sent for review.");
                 submissionForm.reset();
                 artistNameInput.readOnly = false;
                 artistNameInput.style.backgroundColor = "#fafafa";
 
             } catch (err) {
-                console.error("Submission Error:", err);
+                console.error("❌ Submission Error:", err);
                 alert("An error occurred during submission: " + err.message);
             } finally {
                 submitBtn.disabled = false;
